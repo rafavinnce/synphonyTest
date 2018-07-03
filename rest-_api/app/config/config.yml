@@ -66,3 +66,58 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+
+
+# Nelmio CORS Configuration
+nelmio_cors:
+    defaults:
+        allow_credentials: false
+        allow_origin: ['*']
+        allow_headers: ['*']
+        allow_methods: ['GET'] # only GET requests
+        max_age: 3600
+        hosts: []
+        origin_regex: false
+
+# NelmioApiDoc Configuration
+nelmio_api_doc: ~
+
+
+# FOSRest Configuration
+fos_rest:
+#    routing_loader:
+#        default_format: json                            # All responses should be JSON formated
+#        include_format: false                           # We do not include format in request, so that all responses
+
+    body_listener: true
+    format_listener:
+        rules:
+        - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
+    param_fetcher_listener: true
+    view:
+        view_response_listener: 'force'
+        formats:
+            json: true
+# will eventually be JSON formated
+
+fos_user:
+    db_driver: orm
+    firewall_name: api                                  # Seems to be used when registering user/reseting password,
+    # but since there is no "login", as so it seems to be useless in
+    # our particular context, but still required by "FOSUserBundle"
+    user_class: Acme\ApiBundle\Entity\User
+    from_email:
+        address: "rafaelmilanib@gmail.com"
+        sender_name: "No Reply"
+
+
+# FOSOauthServer Configuration
+fos_oauth_server:
+    db_driver:           orm
+    client_class:        Acme\ApiBundle\Entity\Client
+    access_token_class:  Acme\ApiBundle\Entity\AccessToken
+    refresh_token_class: Acme\ApiBundle\Entity\RefreshToken
+    auth_code_class:     Acme\ApiBundle\Entity\AuthCode
+    service:
+        user_provider: fos_user.user_manager             # This property will be used when valid credentials are given to load the user upon access token creation
